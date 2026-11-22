@@ -1,10 +1,21 @@
+"""Flask web server for the Emotion Detection application.
+
+Receives text from the web interface, runs emotion detection on it
+and returns the formatted result, deployed on localhost:5000.
+"""
 from flask import Flask, render_template, request
 from EmotionDetection.emotion_detection import emotion_detector
 
 app = Flask("Emotion Detector")
 
+
 @app.route("/emotionDetector")
 def emo_detector():
+    """Run emotion detection on the text received from the HTML interface.
+
+    Returns a message with the score of each emotion and the dominant
+    emotion, or an error message when the input text is invalid.
+    """
     text_to_analyze = request.args.get('textToAnalyze')
     response = emotion_detector(text_to_analyze)
 
@@ -24,9 +35,12 @@ def emo_detector():
         f"'sadness': {sadness}. The dominant emotion is {dominant_emotion}."
     )
 
+
 @app.route("/")
 def render_index_page():
+    """Render the main application page (index.html)."""
     return render_template('index.html')
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
