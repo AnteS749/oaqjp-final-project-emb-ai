@@ -7,10 +7,18 @@ def emotion_detector(text_to_analyze):
     myobj = {"raw_document": {"text": text_to_analyze}}
     response = requests.post(url, json=myobj, headers=headers)
 
-    # 1. Pretvori tekst u rječnik
-    formatted_response = json.loads(response.text)
+    # Prazan unos: Watson vrati status 400, vraćamo rječnik s None vrijednostima
+    if response.status_code == 400:
+        return {
+            'anger': None,
+            'disgust': None,
+            'fear': None,
+            'joy': None,
+            'sadness': None,
+            'dominant_emotion': None
+        }
 
-    # 2. Izvuci emocije i ocjene
+    formatted_response = json.loads(response.text)
     emotions = formatted_response['emotionPredictions'][0]['emotion']
     anger_score = emotions['anger']
     disgust_score = emotions['disgust']
@@ -18,7 +26,6 @@ def emotion_detector(text_to_analyze):
     joy_score = emotions['joy']
     sadness_score = emotions['sadness']
 
-    # 3. Nađi dominantnu emociju (najveća ocjena)
     scores = {
         'anger': anger_score,
         'disgust': disgust_score,
@@ -28,7 +35,6 @@ def emotion_detector(text_to_analyze):
     }
     dominant_emotion = max(scores, key=scores.get)
 
-    # 4. Vrati traženi format
     return {
         'anger': anger_score,
         'disgust': disgust_score,
